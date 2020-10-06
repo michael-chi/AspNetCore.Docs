@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: aspnetcore
+spec:
+    strategy:
+        type: RollingUpdate
+        rollingUpdate:
+            maxSurge: 1
+        #   maxUnavailable: 25%
+    selector:
+        matchLabels:
+            app: aspnetcore
+    replicas: 1
+    template:
+        metadata:
+            labels:
+                app: aspnetcore
+        spec:
+            # affinity:
+            #     nodeAffinity:
+            #       requiredDuringSchedulingIgnoredDuringExecution:
+            #         nodeSelectorTerms:
+            #         - matchExpressions:
+            #           - key: dedicated
+            #             operator: In
+            #             values: 
+            #             - aspnetcore
+            # tolerations:
+            #     - key: dedicated
+            #       operator: Equal
+            #       value: aspnetcore
+            #       effect: NoSchedule
+            containers:
+            -   name: aspnetcore
+                image: gcr.io/kalschi-agones/aspcore-demo-mvc:003
+                imagePullPolicy: Always
+                ports:
+                    -   name: http
+                        containerPort: 8080
+                livenessProbe:
+                    tcpSocket:
+                        port: 8080
+                    initialDelaySeconds: 5
+                readinessProbe:
+                    tcpSocket:
+                        port: 8080
+                    initialDelaySeconds: 5
+                resources:
+                    requests:
+                        cpu: 10m
+                        memory: 0.5G   
+                env:
+                    - name: REDIS_ADDRESS
+                      value: 10.29.175.171:6379
+                    # - name: ASPNETCORE_URLS
+                    #   value: http://*:5000

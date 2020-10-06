@@ -1,0 +1,30 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  name: mssql
+spec:
+  hosts:
+  - mssql.gcp
+  addresses:
+  - 10.28.128.3
+  ports:
+  - number: 1433
+    name: tcp-mssql
+    protocol: TCP
+  resolution: STATIC
+  location: MESH_EXTERNAL
+  endpoints:
+  - address: 10.28.128.3
+    ports:
+      tcp-mssql: 1433
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: mssql
+spec:
+  host: mssql.gcp
+  trafficPolicy:
+    tls:
+      mode: DISABLE
+      sni: mssql.gcp

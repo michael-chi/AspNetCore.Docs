@@ -1,0 +1,18 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: aspnetcore
+  annotations:
+    # Use Network Endpoint Group so traffic directly laod balanced to pods
+    cloud.google.com/neg: '{"ingress": true}'
+    # beta.cloud.google.com/backend-config: '{"ports": {"80":"mud-backendconfig"}}'
+spec:
+  sessionAffinity: ClientIP 
+  selector:
+    app: aspnetcore
+  ports:
+  - protocol: TCP
+    port: 8080
+    name: http
+    targetPort: 8080
+  # type: ClusterIP
